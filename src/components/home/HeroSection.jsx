@@ -41,6 +41,18 @@ const CARD_META = [
   { num: '2.6', label: 'Archive' },
 ]
 
+const DEFAULT_BG = '#0E0E0E'
+
+// Page background tone per showcase product - tinted darks so the white type stays legible
+const PRODUCT_BG = {
+  '001': '#101a26', // cool indigo (Air Phantom Elite)
+  '002': '#1c1410', // warm umber (Urban Drift Low)
+  '003': '#10211c', // forest green
+  '004': '#1f1228', // deep plum
+  '005': '#241a10', // burnt amber
+  '006': '#0e0e0e', // matte graphite
+}
+
 function CornerMark({ className = '' }) {
   return (
     <span className={`absolute text-sm font-light leading-none select-none ${className}`}>
@@ -66,7 +78,7 @@ function ShoeCard({ product, index, isActive }) {
         }`}
       />
 
-      {/* Top dossier strip — gradient backdrop + hairline */}
+      {/* Top dossier strip - gradient backdrop + hairline */}
       <div className="absolute top-0 left-0 right-0 z-10 pointer-events-none">
         <div className="bg-gradient-to-b from-black/70 via-black/30 to-transparent">
           <div className="flex items-center justify-between px-5 pt-5 pb-3 text-[10px] tracking-[0.22em] uppercase">
@@ -138,53 +150,55 @@ export function HeroSection() {
 
   const active = SHOWCASE[activeIdx]
 
+  const pageBg = PRODUCT_BG[active.id] || DEFAULT_BG
+
   return (
-    <section className="relative min-h-screen bg-surface-dark text-white flex flex-col overflow-hidden">
+    <motion.section
+      className="relative min-h-screen text-white flex flex-col overflow-hidden"
+      initial={{ backgroundColor: pageBg }}
+      animate={{ backgroundColor: pageBg }}
+      transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+    >
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="show"
         className="flex-1 flex flex-col"
       >
-        {/* Top dossier bar */}
-        <motion.div
-          variants={fadeUp}
-          className="layout-pad border-b border-white/10 py-4 grid grid-cols-2 md:grid-cols-3 gap-4 text-[10px] md:text-xs tracking-[0.18em] uppercase text-white/60"
-        >
-          <span className="font-medium">SOLE &mdash; A Footwear Dossier</span>
-          <span className="hidden md:block text-center">FW26 / Vol.01</span>
-          <span className="text-right text-white/70">
-            <span className="text-accent mr-1">+</span>Pitch Deck
-          </span>
-        </motion.div>
-
-        {/* Main editorial grid — cards LEFT, text RIGHT */}
+        {/* Main editorial grid - cards LEFT, text RIGHT */}
         <div className="flex-1 layout-pad py-10 md:py-14 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* LEFT — cascading card carousel */}
+          {/* LEFT column - half-circle cascade, shifted slightly inward with bigger gaps */}
           <motion.div
             variants={fadeUp}
-            className="lg:col-span-6 flex flex-col items-center order-2 lg:order-1"
+            className="lg:col-span-6 flex flex-col items-center lg:items-start order-2 lg:order-1 lg:ml-0 xl:-ml-4"
           >
-            <div className="relative w-full max-w-[360px] aspect-[5/4]">
+            <div className="relative w-full max-w-[400px] aspect-[5/4]">
               {SHOWCASE.map((product, i) => {
                 const rel = ((i - activeIdx) + N) % N
                 const signed = rel > N / 2 ? rel - N : rel
                 const isActive = i === activeIdx
                 const abs = Math.abs(signed)
-                const visible = abs <= 3
+                const visible = abs <= 2
+
+                // Half-circle bulging LEFT - active sits at the RIGHTMOST (middle) point of
+                // the arc at full size; siblings shrink and curve out to upper/lower LEFT.
+                const radius = 220
+                const angleStep = 44
+                const angleDeg = signed * angleStep
+                const angleRad = (angleDeg * Math.PI) / 180
+
+                const x = isActive ? 0 : -radius + radius * Math.cos(angleRad)
+                const y = isActive ? 0 : radius * Math.sin(angleRad)
+                const scale = isActive ? 1 : 0.62 - abs * 0.08
+                const rotate = signed * -8
+                const opacity = visible ? 1 : 0
 
                 return (
                   <motion.button
                     type="button"
                     key={product.id}
                     onClick={() => setActiveIdx(i)}
-                    animate={{
-                      x: signed * 34,
-                      y: signed * 130,
-                      scale: isActive ? 1 : 1 - abs * 0.08,
-                      rotate: signed * -5,
-                      opacity: visible ? (isActive ? 1 : 0.85 - abs * 0.15) : 0,
-                    }}
+                    animate={{ x, y, scale, rotate, opacity }}
                     transition={{
                       type: 'spring',
                       stiffness: 130,
@@ -228,7 +242,7 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* RIGHT — editorial stack */}
+          {/* RIGHT - editorial stack */}
           <div className="lg:col-span-6 flex flex-col order-1 lg:order-2">
             <motion.div
               variants={fadeUp}
@@ -264,7 +278,7 @@ export function HeroSection() {
                       <span>Now in rotation &middot; {active.brand}</span>
                     </div>
                     <p className="mt-3 text-sm text-white/70 leading-relaxed">
-                      {active.name} &mdash; <span className="text-white">{formatPrice(active.price)}</span>
+                      {active.name} - <span className="text-white">{formatPrice(active.price)}</span>
                     </p>
                   </div>
                   <div className="flex flex-col gap-3">
@@ -311,6 +325,6 @@ export function HeroSection() {
           </div>
         </motion.div>
       </motion.div>
-    </section>
+    </motion.section>
   )
 }

@@ -101,7 +101,7 @@ export function CartDrawer() {
                 </div>
                 <p className="text-xs text-gray-400">Shipping and taxes calculated at checkout</p>
                 <Button variant="primary" size="lg" className="w-full">
-                  Checkout — {formatPrice(subtotal)}
+                  Checkout - {formatPrice(subtotal)}
                 </Button>
                 <button
                   onClick={clearCart}

@@ -108,7 +108,7 @@ export function Footer() {
           <div className="max-w-lg mx-auto text-center">
             <h3 className="text-white font-semibold text-lg mb-2">Stay in step</h3>
             <p className="text-gray-400 text-sm mb-6">
-              New drops, exclusive offers, and style inspiration — delivered to your inbox.
+              New drops, exclusive offers, and style inspiration - delivered to your inbox.
             </p>
             <form
               onSubmit={(e) => e.preventDefault()}

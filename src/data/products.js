@@ -131,7 +131,7 @@ export const PRODUCTS = [
     isNew: false,
     isTrending: false,
     description:
-      'Timeless canvas construction with vulcanized sole. The icon that started it all — now reissued with modern comfort updates.',
+      'Timeless canvas construction with vulcanized sole. The icon that started it all - now reissued with modern comfort updates.',
     rating: 4.5,
     reviews: 521,
   },
