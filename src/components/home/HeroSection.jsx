@@ -167,7 +167,7 @@ export function HeroSection() {
       >
         {/* Main editorial grid - cards LEFT, text RIGHT */}
         <div className="flex-1 layout-pad py-10 md:py-14 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* LEFT column - half-circle cascade, shifted slightly inward with bigger gaps */}
+          {/* LEFT column - cascade hugged to the LEFT side; active jumps to the middle */}
           <motion.div
             variants={fadeUp}
             className="lg:col-span-6 flex flex-col items-center lg:items-start order-2 lg:order-1 lg:ml-0 xl:-ml-4"
@@ -180,17 +180,23 @@ export function HeroSection() {
                 const abs = Math.abs(signed)
                 const visible = abs <= 2
 
-                // Half-circle bulging LEFT - active sits at the RIGHTMOST (middle) point of
-                // the arc at full size; siblings shrink and curve out to upper/lower LEFT.
+                // Cascade arc (committed behavior) - siblings curve to upper/lower LEFT
                 const radius = 220
                 const angleStep = 44
                 const angleDeg = signed * angleStep
                 const angleRad = (angleDeg * Math.PI) / 180
 
-                const x = isActive ? 0 : -radius + radius * Math.cos(angleRad)
-                const y = isActive ? 0 : radius * Math.sin(angleRad)
+                const arcX = -radius + radius * Math.cos(angleRad)
+                const arcY = radius * Math.sin(angleRad)
+
+                // Active is pulled OUT of the arc and translated to the middle of the page
+                const showcaseX = 320
+                const showcaseY = 0
+
+                const x = isActive ? showcaseX : arcX
+                const y = isActive ? showcaseY : arcY
                 const scale = isActive ? 1 : 0.62 - abs * 0.08
-                const rotate = signed * -8
+                const rotate = isActive ? 0 : signed * -8
                 const opacity = visible ? 1 : 0
 
                 return (
@@ -242,8 +248,8 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* RIGHT - editorial stack */}
-          <div className="lg:col-span-6 flex flex-col order-1 lg:order-2">
+          {/* RIGHT - editorial stack, shifted further right so the showcase card doesn't cover it */}
+          <div className="lg:col-start-9 lg:col-span-4 flex flex-col order-1 lg:order-2">
             <motion.div
               variants={fadeUp}
               className="flex items-center gap-4 text-xs tracking-[0.2em] uppercase text-white/60"
